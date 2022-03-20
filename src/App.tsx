@@ -6,12 +6,21 @@ import Navbar from './components/navbar'
 const App = () => {
 
 
-  const [activity, setActivity] = useState()
+  const [activity, setActivity] = useState({})
 
   const renderActivity = async () => {
-    const response = await axios.get('https://www.boredapi.com/api/activity');
+    try{
+      const response = await axios.get('https://www.boredapi.com/api/activity');
+      setActivity(response.data)
+    }
+    catch(e){
+      console.error(e)
+    }
+   
+  }
 
-    setActivity(response.data)
+  const methodDoesNotExist = () => {
+    throw new Error("Sentry testing");
   }
 
 
@@ -25,6 +34,8 @@ const App = () => {
       <pre className='pt-4'>
         {JSON.stringify(activity)}
       </pre>
+      return <button onClick={methodDoesNotExist}>Break the world</button>;
+
       </div>
    
     </div>
