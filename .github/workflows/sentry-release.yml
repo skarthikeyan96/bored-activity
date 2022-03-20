@@ -8,6 +8,8 @@ on:
 jobs:
   createSentryRelease:
     runs-on: ubuntu-latest
+    env:
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
     strategy:
       matrix:
         node-version: [14.x]
@@ -22,14 +24,18 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: Install packages
         run: npm install
-      - name: Build page
+      - name: Build app
         run: npm build
       - name: Create Sentry release
-        uses: getsentry/action-release@v1
-        env:
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
-          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
-        with:
-          environment: production
-          sourcemaps: './build/static/js/'
+        run: |
+          curl -sL https://sentry.io/get-cli/ | bash
+
+          export SENTRY_AUTH_TOKEN= $SENTRY_AUTH_TOKEN
+          export SENTRY_ORG=arrowinc
+          export SENTRY_PROJECT=bored
+          VERSION=$(sentry-cli releases propose-version)
+          sentry-cli releases new -p bored $VERSION
+          sentry-cli releases set-commits --auto $VERSION
+          sentry-cli releases finalize $VERSION
+          sentry-cli releases files $VERSION upload-sourcemaps build/static/js --url-prefix '~/static/js' --no-rewrite
+          sentry-cli releases deploys $VERSION new -e "production"
