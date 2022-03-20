@@ -30,9 +30,7 @@ jobs:
         run: |
           curl -sL https://sentry.io/get-cli/ | bash
 
-          echo $SENTRY_AUTH_TOKEN | base64 --decode > .env
 
-          export SENTRY_AUTH_TOKEN= ${{ secrets.SENTRY_AUTH_TOKEN }}
           export SENTRY_ORG=arrowinc
           export SENTRY_PROJECT=bored
           VERSION=$(sentry-cli releases propose-version)
