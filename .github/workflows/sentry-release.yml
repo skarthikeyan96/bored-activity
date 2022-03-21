@@ -29,11 +29,8 @@ jobs:
       - name: Build the applicaiton
         run: yarn build
       - name: Create Sentry release
-        run: |
-          curl -sL https://sentry.io/get-cli/ | bash
-          VERSION=$(sentry-cli releases propose-version)
-          sentry-cli releases new -p bored $VERSION
-          sentry-cli releases set-commits --auto $VERSION
-          sentry-cli releases finalize $VERSION
-          sentry-cli releases files $VERSION upload-sourcemaps build/static/js --url-prefix '~/static/js' --no-rewrite
-          sentry-cli releases deploys $VERSION new -e "production"
+        uses: getsentry/action-release@v1
+        with:
+          environment: production
+          sourcemaps: './build/static/js/'
+      
