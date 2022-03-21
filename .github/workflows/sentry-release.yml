@@ -24,10 +24,12 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
+      - name: Install Deps
+        run: yarn install
+      - name: Build the applicaiton
+        run: yarn build
       - name: Create Sentry release
         run: |
-          npm install
-          npm run build
           curl -sL https://sentry.io/get-cli/ | bash
           VERSION=$(sentry-cli releases propose-version)
           sentry-cli releases new -p bored $VERSION
