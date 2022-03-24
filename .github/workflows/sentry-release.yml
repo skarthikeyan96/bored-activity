@@ -43,11 +43,12 @@ jobs:
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn install --frozen-lockfile --silent
 
-      - name: Build the applicaiton
+      - name: Build the packages
         run: yarn build
       - name: Create Sentry release
         uses: getsentry/action-release@v1
         with:
           environment: production
           sourcemaps: './build/static/js/'
+          version: ${{ github.event.release.tag_name }}
       
